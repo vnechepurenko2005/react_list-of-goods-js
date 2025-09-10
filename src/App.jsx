@@ -27,7 +27,7 @@ export const App = () => {
   let visibleGoods = goodsFromServer;
 
   if (sortField) {
-    visibleGoods = visibleGoods.toSorted((good1, good2) => {
+    visibleGoods = [...visibleGoods].sort((good1, good2) => {
       switch (sortField) {
         case SORT_BY_ALPHABET:
           return good1.localeCompare(good2);
@@ -42,10 +42,18 @@ export const App = () => {
   }
 
   if (reversed) {
-    visibleGoods = visibleGoods.toReversed();
+    visibleGoods = [...visibleGoods].reverse();
   }
 
   const isChanged = sortField !== '' || reversed;
+
+  const handleSortByAlphabet = () => setSortField(SORT_BY_ALPHABET);
+  const handleSortByLength = () => setSortField(SORT_BY_LENGTH);
+  const handleToggleReverse = () => setReversed(prev => !prev);
+  const handleReset = () => {
+    setSortField('');
+    setReversed(false);
+  };
 
   return (
     <div className="section content">
@@ -55,7 +63,7 @@ export const App = () => {
           className={cn('button is-info', {
             'is-light': sortField !== SORT_BY_ALPHABET,
           })}
-          onClick={() => setSortField(SORT_BY_ALPHABET)}
+          onClick={handleSortByAlphabet}
         >
           Sort alphabetically
         </button>
@@ -65,7 +73,7 @@ export const App = () => {
           className={cn('button is-success', {
             'is-light': sortField !== SORT_BY_LENGTH,
           })}
-          onClick={() => setSortField(SORT_BY_LENGTH)}
+          onClick={handleSortByLength}
         >
           Sort by length
         </button>
@@ -75,7 +83,7 @@ export const App = () => {
           className={cn('button is-warning', {
             'is-light': !reversed,
           })}
-          onClick={() => setReversed(!reversed)}
+          onClick={handleToggleReverse}
         >
           Reverse
         </button>
@@ -84,10 +92,7 @@ export const App = () => {
           <button
             type="button"
             className="button is-danger is-light"
-            onClick={() => {
-              setSortField('');
-              setReversed(false);
-            }}
+            onClick={handleReset}
           >
             Reset
           </button>
@@ -96,7 +101,9 @@ export const App = () => {
 
       <ul>
         {visibleGoods.map(good => (
-          <li data-cy="Good">{good}</li>
+          <li key={good} data-cy="Good">
+            {good}
+          </li>
         ))}
       </ul>
     </div>
